@@ -1,5 +1,5 @@
 {
-  "name": "wac-hospital",
+  "name": "ambulance-ufe",
   "version": "0.0.1",
   "description": "Stencil Component Starter",
   "main": "dist/index.cjs.js",
@@ -7,11 +7,11 @@
   "types": "dist/types/index.d.ts",
   "collection": "dist/collection/collection-manifest.json",
   "collection:main": "dist/collection/index.js",
-  "unpkg": "dist/wac-hospital/wac-hospital.esm.js",
+  "unpkg": "dist/ambulance-ufe/ambulance-ufe.esm.js",
   "exports": {
     ".": {
-      "import": "./dist/wac-hospital/wac-hospital.esm.js",
-      "require": "./dist/wac-hospital/wac-hospital.cjs.js"
+      "import": "./dist/ambulance-ufe/ambulance-ufe.esm.js",
+      "require": "./dist/ambulance-ufe/ambulance-ufe.cjs.js"
     },
     "./my-component": {
       "import": "./dist/components/my-component.js",
@@ -32,22 +32,36 @@
     "loader/"
   ],
   "scripts": {
+    "test:jest": "jest --config ./jest.config.js",
+    "openapi": "openapi-generator-cli generate",
     "build": "stencil build",
-    "start": "stencil build --dev --watch --serve",
+    "convert-openapi": "js-yaml  ./api/ambulance-wl.openapi.yaml > .openapi.json",
+    "mock-api": "open-api-mocker --schema .openapi.json --port 5000",
+    "start:app": "stencil build --dev --watch --serve",
+    "start:mock": "run-s convert-openapi mock-api",
+    "start": "run-p -r start:mock start:app",
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
     "generate": "stencil generate"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.24.5",
+    "@openapitools/openapi-generator-cli": "^2.13.4",
     "@stencil/core": "^4.7.0",
     "@types/jest": "^29.5.6",
     "@types/node": "^16.18.11",
+    "axios-mock-adapter": "^1.22.0",
+    "babel-jest": "^29.7.0",
     "jest": "^29.7.0",
     "jest-cli": "^29.7.0",
+    "js-yaml": "^4.1.0",
+    "npm-run-all": "^4.1.5",
+    "open-api-mocker": "^2.0.0",
     "puppeteer": "^21.9.0"
   },
   "license": "MIT",
   "dependencies": {
-    "@material/web": "^1.4.1"
+    "@material/web": "^1.4.1",
+    "axios": "^1.6.0"
   }
 }
