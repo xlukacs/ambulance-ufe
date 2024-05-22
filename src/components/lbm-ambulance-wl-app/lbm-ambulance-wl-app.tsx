@@ -54,6 +54,7 @@ export class LbmAmbulanceWlApp {
       <Host>
         { element === "editor"
         ? <lbm-ambulance-wl-editor entry-id={entryId}
+            ambulance-id={this.ambulanceId} api-base={this.apiBase}
             oneditor-closed={ () => navigate("./list")} >
           </lbm-ambulance-wl-editor>
         : <lbm-ambulance-wl-list ambulance-id={this.ambulanceId} api-base={this.apiBase}
