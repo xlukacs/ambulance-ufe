@@ -6,6 +6,11 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
+    interface JmLbmComp1 {
+        "ambulanceId": string;
+        "apiBase": string;
+        "basePath": string;
+    }
     interface LbmAmbulanceWlApp {
         "ambulanceId": string;
         "apiBase": string;
@@ -34,6 +39,12 @@ export namespace Components {
          */
         "middle": string;
     }
+    interface RoomManager {
+        "ambulanceId": string;
+        "apiBase": string;
+    }
+    interface ScheduleManager {
+    }
 }
 export interface LbmAmbulanceWlEditorCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -44,6 +55,12 @@ export interface LbmAmbulanceWlListCustomEvent<T> extends CustomEvent<T> {
     target: HTMLLbmAmbulanceWlListElement;
 }
 declare global {
+    interface HTMLJmLbmComp1Element extends Components.JmLbmComp1, HTMLStencilElement {
+    }
+    var HTMLJmLbmComp1Element: {
+        prototype: HTMLJmLbmComp1Element;
+        new (): HTMLJmLbmComp1Element;
+    };
     interface HTMLLbmAmbulanceWlAppElement extends Components.LbmAmbulanceWlApp, HTMLStencilElement {
     }
     var HTMLLbmAmbulanceWlAppElement: {
@@ -90,14 +107,34 @@ declare global {
         prototype: HTMLMyComponentElement;
         new (): HTMLMyComponentElement;
     };
+    interface HTMLRoomManagerElement extends Components.RoomManager, HTMLStencilElement {
+    }
+    var HTMLRoomManagerElement: {
+        prototype: HTMLRoomManagerElement;
+        new (): HTMLRoomManagerElement;
+    };
+    interface HTMLScheduleManagerElement extends Components.ScheduleManager, HTMLStencilElement {
+    }
+    var HTMLScheduleManagerElement: {
+        prototype: HTMLScheduleManagerElement;
+        new (): HTMLScheduleManagerElement;
+    };
     interface HTMLElementTagNameMap {
+        "jm-lbm-comp1": HTMLJmLbmComp1Element;
         "lbm-ambulance-wl-app": HTMLLbmAmbulanceWlAppElement;
         "lbm-ambulance-wl-editor": HTMLLbmAmbulanceWlEditorElement;
         "lbm-ambulance-wl-list": HTMLLbmAmbulanceWlListElement;
         "my-component": HTMLMyComponentElement;
+        "room-manager": HTMLRoomManagerElement;
+        "schedule-manager": HTMLScheduleManagerElement;
     }
 }
 declare namespace LocalJSX {
+    interface JmLbmComp1 {
+        "ambulanceId"?: string;
+        "apiBase"?: string;
+        "basePath"?: string;
+    }
     interface LbmAmbulanceWlApp {
         "ambulanceId"?: string;
         "apiBase"?: string;
@@ -128,21 +165,33 @@ declare namespace LocalJSX {
          */
         "middle"?: string;
     }
+    interface RoomManager {
+        "ambulanceId"?: string;
+        "apiBase"?: string;
+    }
+    interface ScheduleManager {
+    }
     interface IntrinsicElements {
+        "jm-lbm-comp1": JmLbmComp1;
         "lbm-ambulance-wl-app": LbmAmbulanceWlApp;
         "lbm-ambulance-wl-editor": LbmAmbulanceWlEditor;
         "lbm-ambulance-wl-list": LbmAmbulanceWlList;
         "my-component": MyComponent;
+        "room-manager": RoomManager;
+        "schedule-manager": ScheduleManager;
     }
 }
 export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "jm-lbm-comp1": LocalJSX.JmLbmComp1 & JSXBase.HTMLAttributes<HTMLJmLbmComp1Element>;
             "lbm-ambulance-wl-app": LocalJSX.LbmAmbulanceWlApp & JSXBase.HTMLAttributes<HTMLLbmAmbulanceWlAppElement>;
             "lbm-ambulance-wl-editor": LocalJSX.LbmAmbulanceWlEditor & JSXBase.HTMLAttributes<HTMLLbmAmbulanceWlEditorElement>;
             "lbm-ambulance-wl-list": LocalJSX.LbmAmbulanceWlList & JSXBase.HTMLAttributes<HTMLLbmAmbulanceWlListElement>;
             "my-component": LocalJSX.MyComponent & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
+            "room-manager": LocalJSX.RoomManager & JSXBase.HTMLAttributes<HTMLRoomManagerElement>;
+            "schedule-manager": LocalJSX.ScheduleManager & JSXBase.HTMLAttributes<HTMLScheduleManagerElement>;
         }
     }
 }
