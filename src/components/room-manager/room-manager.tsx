@@ -10,7 +10,7 @@ export class RoomManager {
   @Prop() apiBase: string;
   @Prop() ambulanceId: string;
   @State() rooms: Room[];
-  @State() newRoom: Room = {id: '@new', width: '', height: '', tipicalCostToOperate: 0, equipment: ""};
+  @State() newRoom: Room = {id: '@new', width: '', height: '', tipicalCostToOperate: 0, equipment: "", name: ""};
   @State() editorMode: boolean = false;
   @State() editedRoom: Room;
 
@@ -28,8 +28,8 @@ export class RoomManager {
     }
     // always have some fallback condition
     return local_rooms || [
-      { id: "1", width: "10", height: "10", tipicalCostToOperate: 100, equipment: "1xbed" },
-      { id: "2", width: "15", height: "12", tipicalCostToOperate: 105 , equipment: "1xbed" },
+      { id: "1", width: "10", height: "10", tipicalCostToOperate: 100, equipment: "1xbed", name: "Room 1"},
+      { id: "2", width: "15", height: "12", tipicalCostToOperate: 105 , equipment: "1xbed", name: "Room 2" },
     ];
   }
 
@@ -73,7 +73,8 @@ export class RoomManager {
       width: this.newRoom.width,
       height: this.newRoom.height,
       tipicalCostToOperate: cost,
-      equipment: this.newRoom.equipment
+      equipment: this.newRoom.equipment,
+      name: this.newRoom.name
     }
     console.log("Creating room", created_room);
 
@@ -189,6 +190,7 @@ export class RoomManager {
                     <div>Width: <span>{room.width}</span></div>
                     <div>Height: <span>{room.height}</span></div>
                     <div>Equipment: <span>{room.equipment}</span></div>
+                    <div>Name: <span>{room.name}</span></div>
                   </div>
                   <md-icon slot="start">DUNNO</md-icon>
 
@@ -227,6 +229,13 @@ export class RoomManager {
                     required
                     value={this.newRoom.equipment}
                     onInput={(event) => this.handleInputChange(event, 'equipment')}
+                  />
+                  <md-filled-text-field
+                    label="New room name..."
+                    name="new_room_name"
+                    required
+                    value={this.newRoom.name}
+                    onInput={(event) => this.handleInputChange(event, 'name')}
                   />
                 </div>
 

@@ -81,6 +81,13 @@ export class AmbulanceRoom {
                 value={this.roomData.equipment}
                 onInput={(event) => this.handleInputChange(event, 'equipment')}
               />
+              <md-filled-text-field
+                label="Update room name..."
+                name="new_room_name"
+                required
+                value={this.roomData.name}
+                onInput={(event) => this.handleInputChange(event, 'name')}
+              />
             </div>
         </slot>
 

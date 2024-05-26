@@ -68,7 +68,9 @@ export class JmLbmComp1 {
               <schedule-manager ambulance-id={this.ambulanceId} api-base={this.apiBase}></schedule-manager>
             ) : (
               <div class="content">
-                <p>Hellow world from Marcel Javorka and Bence Mark Lukacs V2</p>
+                <lbm-ambulance-wl-app  ambulance-id={this.ambulanceId} api-base={this.apiBase} base-path={this.basePath}></lbm-ambulance-wl-app>
+                <br />
+                <br />
 
                 <div class="bubble">
                   <h2>
