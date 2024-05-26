@@ -133,6 +133,12 @@ export interface Room {
      * @memberof Room
      */
     'tipicalCostToOperate'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof Room
+     */
+    'equipment'?: string;
 }
 /**
  * 
@@ -170,6 +176,49 @@ export interface RoomsListEntry {
      * @memberof RoomsListEntry
      */
     'Room'?: Room;
+}
+/**
+ * 
+ * @export
+ * @interface Schedule
+ */
+export interface Schedule {
+    /**
+     * Unique id of the entry in this waiting list
+     * @type {string}
+     * @memberof Schedule
+     */
+    'id': string;
+    /**
+     * Unique identifier of the patient known to Web-In-Cloud system
+     * @type {string}
+     * @memberof Schedule
+     */
+    'patientId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Schedule
+     */
+    'roomId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Schedule
+     */
+    'note': string;
+    /**
+     * Timestamp since when the patient entered the waiting list
+     * @type {string}
+     * @memberof Schedule
+     */
+    'start': string;
+    /**
+     * Estimated time of entering ambulance. Ignored on post.
+     * @type {string}
+     * @memberof Schedule
+     */
+    'end': string;
 }
 /**
  * 
@@ -358,11 +407,11 @@ export const AmbulanceRoomsApiAxiosParamCreator = function (configuration?: Conf
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createRoomsListEntry: async (ambulanceId: string, room: Room, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createRoom: async (ambulanceId: string, room: Room, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'ambulanceId' is not null or undefined
-            assertParamExists('createRoomsListEntry', 'ambulanceId', ambulanceId)
+            assertParamExists('createRoom', 'ambulanceId', ambulanceId)
             // verify required parameter 'room' is not null or undefined
-            assertParamExists('createRoomsListEntry', 'room', room)
+            assertParamExists('createRoom', 'room', room)
             const localVarPath = `/rooms/{ambulanceId}/entries`
                 .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -384,6 +433,44 @@ export const AmbulanceRoomsApiAxiosParamCreator = function (configuration?: Conf
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(room, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Use this method to delete the specific room from the rooms list.
+         * @summary Deletes specific room
+         * @param {string} ambulanceId pass the id of the particular ambulance
+         * @param {string} entryId pass the id of the particular entry in the rooms list
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteRoom: async (ambulanceId: string, entryId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'ambulanceId' is not null or undefined
+            assertParamExists('deleteRoom', 'ambulanceId', ambulanceId)
+            // verify required parameter 'entryId' is not null or undefined
+            assertParamExists('deleteRoom', 'entryId', entryId)
+            const localVarPath = `/rooms/{ambulanceId}/entries`
+                .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)))
+                .replace(`{${"entryId"}}`, encodeURIComponent(String(entryId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -442,8 +529,20 @@ export const AmbulanceRoomsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createRoomsListEntry(ambulanceId: string, room: Room, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Room>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createRoomsListEntry(ambulanceId, room, options);
+        async createRoom(ambulanceId: string, room: Room, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Room>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createRoom(ambulanceId, room, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Use this method to delete the specific room from the rooms list.
+         * @summary Deletes specific room
+         * @param {string} ambulanceId pass the id of the particular ambulance
+         * @param {string} entryId pass the id of the particular entry in the rooms list
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteRoom(ambulanceId: string, entryId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteRoom(ambulanceId, entryId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -475,8 +574,19 @@ export const AmbulanceRoomsApiFactory = function (configuration?: Configuration,
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createRoomsListEntry(ambulanceId: string, room: Room, options?: any): AxiosPromise<Room> {
-            return localVarFp.createRoomsListEntry(ambulanceId, room, options).then((request) => request(axios, basePath));
+        createRoom(ambulanceId: string, room: Room, options?: any): AxiosPromise<Room> {
+            return localVarFp.createRoom(ambulanceId, room, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Use this method to delete the specific room from the rooms list.
+         * @summary Deletes specific room
+         * @param {string} ambulanceId pass the id of the particular ambulance
+         * @param {string} entryId pass the id of the particular entry in the rooms list
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteRoom(ambulanceId: string, entryId: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteRoom(ambulanceId, entryId, options).then((request) => request(axios, basePath));
         },
         /**
          * By using ambulanceId you get list of predefined rooms
@@ -506,7 +616,18 @@ export interface AmbulanceRoomsApiInterface {
      * @throws {RequiredError}
      * @memberof AmbulanceRoomsApiInterface
      */
-    createRoomsListEntry(ambulanceId: string, room: Room, options?: AxiosRequestConfig): AxiosPromise<Room>;
+    createRoom(ambulanceId: string, room: Room, options?: AxiosRequestConfig): AxiosPromise<Room>;
+
+    /**
+     * Use this method to delete the specific room from the rooms list.
+     * @summary Deletes specific room
+     * @param {string} ambulanceId pass the id of the particular ambulance
+     * @param {string} entryId pass the id of the particular entry in the rooms list
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AmbulanceRoomsApiInterface
+     */
+    deleteRoom(ambulanceId: string, entryId: string, options?: AxiosRequestConfig): AxiosPromise<void>;
 
     /**
      * By using ambulanceId you get list of predefined rooms
@@ -536,8 +657,21 @@ export class AmbulanceRoomsApi extends BaseAPI implements AmbulanceRoomsApiInter
      * @throws {RequiredError}
      * @memberof AmbulanceRoomsApi
      */
-    public createRoomsListEntry(ambulanceId: string, room: Room, options?: AxiosRequestConfig) {
-        return AmbulanceRoomsApiFp(this.configuration).createRoomsListEntry(ambulanceId, room, options).then((request) => request(this.axios, this.basePath));
+    public createRoom(ambulanceId: string, room: Room, options?: AxiosRequestConfig) {
+        return AmbulanceRoomsApiFp(this.configuration).createRoom(ambulanceId, room, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Use this method to delete the specific room from the rooms list.
+     * @summary Deletes specific room
+     * @param {string} ambulanceId pass the id of the particular ambulance
+     * @param {string} entryId pass the id of the particular entry in the rooms list
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AmbulanceRoomsApi
+     */
+    public deleteRoom(ambulanceId: string, entryId: string, options?: AxiosRequestConfig) {
+        return AmbulanceRoomsApiFp(this.configuration).deleteRoom(ambulanceId, entryId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1227,6 +1361,396 @@ export class AmbulancesApi extends BaseAPI implements AmbulancesApiInterface {
      */
     public deleteAmbulance(ambulanceId: string, options?: AxiosRequestConfig) {
         return AmbulancesApiFp(this.configuration).deleteAmbulance(ambulanceId, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * SchedulesApi - axios parameter creator
+ * @export
+ */
+export const SchedulesApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * Use this method to store new entry into the schedule list.
+         * @summary Saves new entry into schedule list
+         * @param {string} ambulanceId pass the id of the particular ambulance
+         * @param {Schedule} schedule Schedule list entry to store
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createSchedule: async (ambulanceId: string, schedule: Schedule, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'ambulanceId' is not null or undefined
+            assertParamExists('createSchedule', 'ambulanceId', ambulanceId)
+            // verify required parameter 'schedule' is not null or undefined
+            assertParamExists('createSchedule', 'schedule', schedule)
+            const localVarPath = `/schedules/{ambulanceId}/entries`
+                .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(schedule, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Use this method to delete the specific schedule entry from the schedule list.
+         * @summary Deletes specific schedule entry
+         * @param {string} ambulanceId pass the id of the particular ambulance
+         * @param {string} entryId pass the id of the particular entry in the schedule list
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteSchedule: async (ambulanceId: string, entryId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'ambulanceId' is not null or undefined
+            assertParamExists('deleteSchedule', 'ambulanceId', ambulanceId)
+            // verify required parameter 'entryId' is not null or undefined
+            assertParamExists('deleteSchedule', 'entryId', entryId)
+            const localVarPath = `/schedules/{ambulanceId}/entries`
+                .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)))
+                .replace(`{${"entryId"}}`, encodeURIComponent(String(entryId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * By using ambulanceId you get list of predefined schedule
+         * @summary Provides the ambulance schedule
+         * @param {string} ambulanceId pass the id of the particular ambulance
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSchedule: async (ambulanceId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'ambulanceId' is not null or undefined
+            assertParamExists('getSchedule', 'ambulanceId', ambulanceId)
+            const localVarPath = `/schedules/{ambulanceId}/entries`
+                .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Use this method to update content of the schedule entry.
+         * @summary Updates specific schedule entry
+         * @param {string} ambulanceId pass the id of the particular ambulance
+         * @param {string} entryId pass the id of the particular entry in the schedule list
+         * @param {Schedule} schedule Schedule list entry to update
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateSchedule: async (ambulanceId: string, entryId: string, schedule: Schedule, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'ambulanceId' is not null or undefined
+            assertParamExists('updateSchedule', 'ambulanceId', ambulanceId)
+            // verify required parameter 'entryId' is not null or undefined
+            assertParamExists('updateSchedule', 'entryId', entryId)
+            // verify required parameter 'schedule' is not null or undefined
+            assertParamExists('updateSchedule', 'schedule', schedule)
+            const localVarPath = `/schedules/{ambulanceId}/entries`
+                .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)))
+                .replace(`{${"entryId"}}`, encodeURIComponent(String(entryId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(schedule, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * SchedulesApi - functional programming interface
+ * @export
+ */
+export const SchedulesApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = SchedulesApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * Use this method to store new entry into the schedule list.
+         * @summary Saves new entry into schedule list
+         * @param {string} ambulanceId pass the id of the particular ambulance
+         * @param {Schedule} schedule Schedule list entry to store
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createSchedule(ambulanceId: string, schedule: Schedule, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Schedule>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createSchedule(ambulanceId, schedule, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Use this method to delete the specific schedule entry from the schedule list.
+         * @summary Deletes specific schedule entry
+         * @param {string} ambulanceId pass the id of the particular ambulance
+         * @param {string} entryId pass the id of the particular entry in the schedule list
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteSchedule(ambulanceId: string, entryId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteSchedule(ambulanceId, entryId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * By using ambulanceId you get list of predefined schedule
+         * @summary Provides the ambulance schedule
+         * @param {string} ambulanceId pass the id of the particular ambulance
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getSchedule(ambulanceId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<WaitingListEntry>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getSchedule(ambulanceId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Use this method to update content of the schedule entry.
+         * @summary Updates specific schedule entry
+         * @param {string} ambulanceId pass the id of the particular ambulance
+         * @param {string} entryId pass the id of the particular entry in the schedule list
+         * @param {Schedule} schedule Schedule list entry to update
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateSchedule(ambulanceId: string, entryId: string, schedule: Schedule, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Schedule>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateSchedule(ambulanceId, entryId, schedule, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * SchedulesApi - factory interface
+ * @export
+ */
+export const SchedulesApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = SchedulesApiFp(configuration)
+    return {
+        /**
+         * Use this method to store new entry into the schedule list.
+         * @summary Saves new entry into schedule list
+         * @param {string} ambulanceId pass the id of the particular ambulance
+         * @param {Schedule} schedule Schedule list entry to store
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createSchedule(ambulanceId: string, schedule: Schedule, options?: any): AxiosPromise<Schedule> {
+            return localVarFp.createSchedule(ambulanceId, schedule, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Use this method to delete the specific schedule entry from the schedule list.
+         * @summary Deletes specific schedule entry
+         * @param {string} ambulanceId pass the id of the particular ambulance
+         * @param {string} entryId pass the id of the particular entry in the schedule list
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteSchedule(ambulanceId: string, entryId: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteSchedule(ambulanceId, entryId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * By using ambulanceId you get list of predefined schedule
+         * @summary Provides the ambulance schedule
+         * @param {string} ambulanceId pass the id of the particular ambulance
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSchedule(ambulanceId: string, options?: any): AxiosPromise<Array<WaitingListEntry>> {
+            return localVarFp.getSchedule(ambulanceId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Use this method to update content of the schedule entry.
+         * @summary Updates specific schedule entry
+         * @param {string} ambulanceId pass the id of the particular ambulance
+         * @param {string} entryId pass the id of the particular entry in the schedule list
+         * @param {Schedule} schedule Schedule list entry to update
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateSchedule(ambulanceId: string, entryId: string, schedule: Schedule, options?: any): AxiosPromise<Schedule> {
+            return localVarFp.updateSchedule(ambulanceId, entryId, schedule, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * SchedulesApi - interface
+ * @export
+ * @interface SchedulesApi
+ */
+export interface SchedulesApiInterface {
+    /**
+     * Use this method to store new entry into the schedule list.
+     * @summary Saves new entry into schedule list
+     * @param {string} ambulanceId pass the id of the particular ambulance
+     * @param {Schedule} schedule Schedule list entry to store
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SchedulesApiInterface
+     */
+    createSchedule(ambulanceId: string, schedule: Schedule, options?: AxiosRequestConfig): AxiosPromise<Schedule>;
+
+    /**
+     * Use this method to delete the specific schedule entry from the schedule list.
+     * @summary Deletes specific schedule entry
+     * @param {string} ambulanceId pass the id of the particular ambulance
+     * @param {string} entryId pass the id of the particular entry in the schedule list
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SchedulesApiInterface
+     */
+    deleteSchedule(ambulanceId: string, entryId: string, options?: AxiosRequestConfig): AxiosPromise<void>;
+
+    /**
+     * By using ambulanceId you get list of predefined schedule
+     * @summary Provides the ambulance schedule
+     * @param {string} ambulanceId pass the id of the particular ambulance
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SchedulesApiInterface
+     */
+    getSchedule(ambulanceId: string, options?: AxiosRequestConfig): AxiosPromise<Array<WaitingListEntry>>;
+
+    /**
+     * Use this method to update content of the schedule entry.
+     * @summary Updates specific schedule entry
+     * @param {string} ambulanceId pass the id of the particular ambulance
+     * @param {string} entryId pass the id of the particular entry in the schedule list
+     * @param {Schedule} schedule Schedule list entry to update
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SchedulesApiInterface
+     */
+    updateSchedule(ambulanceId: string, entryId: string, schedule: Schedule, options?: AxiosRequestConfig): AxiosPromise<Schedule>;
+
+}
+
+/**
+ * SchedulesApi - object-oriented interface
+ * @export
+ * @class SchedulesApi
+ * @extends {BaseAPI}
+ */
+export class SchedulesApi extends BaseAPI implements SchedulesApiInterface {
+    /**
+     * Use this method to store new entry into the schedule list.
+     * @summary Saves new entry into schedule list
+     * @param {string} ambulanceId pass the id of the particular ambulance
+     * @param {Schedule} schedule Schedule list entry to store
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SchedulesApi
+     */
+    public createSchedule(ambulanceId: string, schedule: Schedule, options?: AxiosRequestConfig) {
+        return SchedulesApiFp(this.configuration).createSchedule(ambulanceId, schedule, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Use this method to delete the specific schedule entry from the schedule list.
+     * @summary Deletes specific schedule entry
+     * @param {string} ambulanceId pass the id of the particular ambulance
+     * @param {string} entryId pass the id of the particular entry in the schedule list
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SchedulesApi
+     */
+    public deleteSchedule(ambulanceId: string, entryId: string, options?: AxiosRequestConfig) {
+        return SchedulesApiFp(this.configuration).deleteSchedule(ambulanceId, entryId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * By using ambulanceId you get list of predefined schedule
+     * @summary Provides the ambulance schedule
+     * @param {string} ambulanceId pass the id of the particular ambulance
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SchedulesApi
+     */
+    public getSchedule(ambulanceId: string, options?: AxiosRequestConfig) {
+        return SchedulesApiFp(this.configuration).getSchedule(ambulanceId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Use this method to update content of the schedule entry.
+     * @summary Updates specific schedule entry
+     * @param {string} ambulanceId pass the id of the particular ambulance
+     * @param {string} entryId pass the id of the particular entry in the schedule list
+     * @param {Schedule} schedule Schedule list entry to update
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SchedulesApi
+     */
+    public updateSchedule(ambulanceId: string, entryId: string, schedule: Schedule, options?: AxiosRequestConfig) {
+        return SchedulesApiFp(this.configuration).updateSchedule(ambulanceId, entryId, schedule, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

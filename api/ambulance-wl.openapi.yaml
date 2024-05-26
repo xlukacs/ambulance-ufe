@@ -21,6 +21,8 @@ tags:
     description: Ambulance rooms and their conditions
   - name: ambulances
     description: Ambulance details
+  - name: schedules
+    description: Ambulance rooms and their conditions
 paths:
   "/waiting-list/{ambulanceId}/entries":
     get:
@@ -256,7 +258,7 @@ paths:
       tags:
         - ambulanceRooms
       summary: Saves new entry into rooms list
-      operationId: createRoomsListEntry
+      operationId: createRoom
       description: Use this method to store new entry into the rooms list.
       parameters:
         - in: path
@@ -293,6 +295,31 @@ paths:
           description: Ambulance with such ID does not exists
         "409":
           description: Entry with the specified id already exists
+    delete:
+      tags:
+        - ambulanceRooms
+      summary: Deletes specific room
+      operationId: deleteRoom
+      description: Use this method to delete the specific room from the rooms list.
+      parameters:
+        - in: path
+          name: ambulanceId
+          description: pass the id of the particular ambulance
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: entryId
+          description: pass the id of the particular entry in the rooms list
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Item deleted
+        "404":
+          description: Ambulance or Entry with such ID does not exists
+
   "/ambulance":
     post:
       tags:
@@ -344,6 +371,147 @@ paths:
           description: Item deleted
         "404":
           description: Ambulance with such ID does not exist
+  "/schedules/{ambulanceId}/entries":
+    get:
+      tags:
+        - schedules
+      summary: Provides the ambulance schedule
+      operationId: getSchedule
+      description: By using ambulanceId you get list of predefined schedule
+      parameters:
+        - in: path
+          name: ambulanceId
+          description: pass the id of the particular ambulance
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: value of the predefined schedule
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WaitingListEntry"
+              examples:
+                response:
+                  $ref: "#/components/examples/WaitingListEntriesExample"
+        "404":
+          description: Ambulance with such ID does not exists
+    post:
+      tags:
+        - schedules
+      summary: Saves new entry into schedule list
+      operationId: createSchedule
+      description: Use this method to store new entry into the schedule list.
+      parameters:
+        - in: path
+          name: ambulanceId
+          description: pass the id of the particular ambulance
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Schedule"
+            examples:
+              request-sample:
+                $ref: "#/components/examples/ScheduleExample"
+        description: Schedule list entry to store
+        required: true
+      responses:
+        "200":
+          description: >-
+            Value of the schedule list entry with re-computed estimated time of
+            ambulance entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Schedule"
+              examples:
+                updated-response:
+                  $ref: "#/components/examples/ScheduleExample"
+        "400":
+          description: Missing mandatory properties of input object.
+        "404":
+          description: Ambulance with such ID does not exists
+        "409":
+          description: Entry with the specified id already exists
+    put:
+      tags:
+        - schedules
+      summary: Updates specific schedule entry
+      operationId: updateSchedule
+      description: Use this method to update content of the schedule entry.
+      parameters:
+        - in: path
+          name: ambulanceId
+          description: pass the id of the particular ambulance
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: entryId
+          description: pass the id of the particular entry in the schedule list
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Schedule"
+            examples:
+              request:
+                $ref: "#/components/examples/ScheduleExample"
+        description: Schedule list entry to update
+        required: true
+      responses:
+        "200":
+          description: >-
+            value of the schedule list entry with re-computed estimated time of
+            ambulance entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Schedule"
+              examples:
+                response:
+                  $ref: "#/components/examples/ScheduleExample"
+        "403":
+          description: >-
+            Value of the entryID and the data id is mismatching. Details are
+            provided in the response body.
+        "404":
+          description: Ambulance or Entry with such ID does not exists
+    delete:
+      tags:
+        - schedules
+      summary: Deletes specific schedule entry
+      operationId: deleteSchedule
+      description: Use this method to delete the specific schedule entry from the schedule list.
+      parameters:
+        - in: path
+          name: ambulanceId
+          description: pass the id of the particular ambulance
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: entryId
+          description: pass the id of the particular entry in the schedule list
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Item deleted
+        "404":
+          description: Ambulance or Entry with such ID does not exists
+
 components:
   schemas:
     Ambulance:
@@ -458,6 +626,9 @@ components:
           type: integer
           format: int32
           example: 20
+        equipment:
+          type: string
+          example: "1x bed, 1x chair, 1x table"
       example:
         $ref: "#/components/examples/RoomExample"
     RoomsListEntry:
@@ -485,6 +656,38 @@ components:
           $ref: "#/components/schemas/Room"
       example:
         $ref: "#/components/examples/RoomsListExample"
+    Schedule:
+      type: object
+      required: [id, patientId, roomId, note, start, end]
+      properties:
+        id:
+          type: string
+          example: x321ab3
+          description: Unique id of the entry in this waiting list
+        patientId:
+          type: string
+          example: 460527-jozef-pucik
+          description: Unique identifier of the patient known to Web-In-Cloud system
+        roomId:
+          type: string
+          example: 356 - 3.posch
+        note:
+          type: string
+          example: 356 - 3.posch
+        start:
+          type: string
+          format: date-time
+          example: "2038-12-24T10:05:00Z"
+          description: Timestamp since when the patient entered the waiting list
+        end:
+          type: string
+          format: date-time
+          example: "2038-12-24T10:35:00Z"
+          description: Estimated time of entering ambulance. Ignored on post.
+      example:
+        $ref: "#/components/examples/ScheduleExample"
+
+
   examples:
     AmbulanceExample:
       summary: Sample GP ambulance
@@ -643,3 +846,21 @@ components:
         height: 0m
         reference: "https://zdravoteka.sk/priznaky/zvysena-telesna-teplota/"
         tipicalCostToOperate: 19
+    ScheduleExample:
+      summary: Schedule of ambulance
+      description: list of schedule of ambulance
+      value:
+        - id: x321ab3
+          patientId: 460527-jozef-pucik
+          roomId: 356 - 3.posch
+          note: 356 - 3.posch
+          start: "2038-12-24T10:05:00.000Z"
+          end: "2038-12-24T10:35:00.000Z"
+        - id: x321ab4
+          patientId: 780907-ferdinand-tre
+          roomId: 356 - 3.posch
+          note: 356 - 3.posch
+          start: "2038-12-24T10:25:00.000Z"
+          end: "2038-12-24T10:50:00.000Z"
+
+

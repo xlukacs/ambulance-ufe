@@ -44,6 +44,8 @@ export namespace Components {
         "apiBase": string;
     }
     interface ScheduleManager {
+        "ambulanceId": string;
+        "apiBase": string;
     }
 }
 export interface LbmAmbulanceWlEditorCustomEvent<T> extends CustomEvent<T> {
@@ -170,6 +172,8 @@ declare namespace LocalJSX {
         "apiBase"?: string;
     }
     interface ScheduleManager {
+        "ambulanceId"?: string;
+        "apiBase"?: string;
     }
     interface IntrinsicElements {
         "jm-lbm-comp1": JmLbmComp1;
