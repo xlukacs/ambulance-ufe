@@ -53,6 +53,7 @@ export class ScheduleManager {
   }
 
   private async editSchedule(scheduleId: string){
+    console.log("Editing schedule", scheduleId);
     const filteredSchedules = this.schedules.filter(schedule => schedule.id === scheduleId);
     this.editedSchedule= filteredSchedules.length > 0 ? filteredSchedules[0] : null;
 
@@ -113,159 +114,174 @@ export class ScheduleManager {
     });
   }
 
+  async closeEditor(event: string){
+    this.editorMode = false
+    if(event == "saved"){
+      alert("Modifications saved!")
+      this.rooms = await SchedulesApiFactory(undefined, this.apiBase).getSchedules(this.ambulanceId).then(response => response.data);
+    }
+  }
 
   render() {
     return (
       <Host>
-        <slot>
-          <h1>
-            Schedule manager
-          </h1>
-          <p>
-            Schdule manager is a tool to manage reservations per room.
-          </p>
-          <div class="tabSelector">
-            <div class="mdc-tab-bar" role="tablist">
-              <label class="mdc-tab mdc-tab--active" role="tab" id="tab1-tab" tabindex="0" htmlFor="tab1-radio">Reservations</label>
-              <label class="mdc-tab" role="tab" id="tab2-tab" tabindex="0" htmlFor="tab2-radio">Manage</label>
+        {
+          this.editorMode ? (
+            <div>
+              <ambulance-schedules data={this.editedSchedule} apiBase={this.apiBase} ambulanceId={this.ambulanceId} onEditor-closed={(ev: CustomEvent<string>)=> this.closeEditor(ev.detail)}></ambulance-schedules>
             </div>
-            <input class="mdc-tab-radio" type="radio" name="tab" id="tab1-radio" checked />
-            <input class="mdc-tab-radio" type="radio" name="tab" id="tab2-radio" />
-          </div>
-          <md-list id="Reservations" class="tab_window active_tab">
-            {this.schedules.length > 0 && this.schedules.map((schedule) =>
-            <md-list-item class="room-item-list">
-              <div class="item-details">
-                <div>ID: <span>{schedule.id}</span></div>
-                <div>PatientId: <span>{schedule.patientId}</span></div>
-                <div>RoomId: <span>{schedule.roomId}</span></div>
-                <div>Note: <span>{schedule.note}</span></div>
-                <div>Start: <span>{schedule.start}</span></div>
-                <div>End: <span>{schedule.end}</span></div>
+          ): (
+            <slot>
+              <h1>
+                Schedule manager
+              </h1>
+              <p>
+                Schdule manager is a tool to manage reservations per room.
+              </p>
+              <div class="tabSelector">
+                <div class="mdc-tab-bar" role="tablist">
+                  <label class="mdc-tab mdc-tab--active" role="tab" id="tab1-tab" tabindex="0" htmlFor="tab1-radio">Reservations</label>
+                  <label class="mdc-tab" role="tab" id="tab2-tab" tabindex="0" htmlFor="tab2-radio">Manage</label>
+                </div>
+                <input class="mdc-tab-radio" type="radio" name="tab" id="tab1-radio" checked />
+                <input class="mdc-tab-radio" type="radio" name="tab" id="tab2-radio" />
               </div>
-              <md-icon slot="start">D</md-icon>
+              <md-list id="Reservations" class="tab_window active_tab">
+                {this.schedules.length > 0 && this.schedules.map((schedule) =>
+                <md-list-item class="room-item-list">
+                  <div class="item-details">
+                    <div>ID: <span>{schedule.id}</span></div>
+                    <div>PatientId: <span>{schedule.patientId}</span></div>
+                    <div>RoomId: <span>{schedule.roomId}</span></div>
+                    <div>Note: <span>{schedule.note}</span></div>
+                    <div>Start: <span>{schedule.start}</span></div>
+                    <div>End: <span>{schedule.end}</span></div>
+                  </div>
+                  <md-icon slot="start">D</md-icon>
 
-              <md-button slot="end" onClick={() => this.editSchedule(schedule.id) }><md-icon slot="icon">edit</md-icon></md-button>
-              <md-button slot="end" onClick={() => this.deleteSchedule(schedule.id) }><md-icon slot="icon">delete</md-icon></md-button>
-            </md-list-item>
-          )}
-          </md-list>
-          <div id="Manage" class="tab_window">
-            <p><b>Create new reservation</b></p>
-            <div class="form">
-              <md-filled-text-field
-                label="New reservation id..."
-                name="new_room_id"
-                required
-                value={this.newSchedule.id}
-                onInput={(event) => this.handleInputChange(event, 'id')}
-              />
-              {/* <md-filled-text-field
-                label="New schedule patient id..."
-                name="new_patientid"
-                required
-                value={this.newSchedule.patientId}
-                onInput={(event) => this.handleInputChange(event, 'patientId')}
-              /> */}
-              <div class="specialSelector">
-                <label htmlFor="patientSelect">Select Patient: </label>
-                <select
-                  id="patientSelect"
-                  name="new_patientid"
-                  required
-                  // value={this.newSchedule.patientId}
-                  onInput={(event) => this.handleInputChange(event, 'patientId')}
-                >
-                  <option value="" disabled>
-                    Select a patient...
-                  </option>
-                  {this.patients.map(patient => (
-                    <option value={patient.id} key={patient.id}>
-                      {patient.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {/* <md-filled-text-field
-                label="New schedule room id..."
-                name="new_roomid"
-                required
-                value={this.newSchedule.roomId}
-                onInput={(event) => this.handleInputChange(event, 'roomId')}
-              /> */}
-              <div class="specialSelector">
-                <label htmlFor="roomSelect">Select Room: </label>
-                <select
-                  id="roomSelect"
-                  name="new_roomid"
-                  required
-                  // value={this.newSchedule.patientId}
-                  onInput={(event) => this.handleInputChange(event, 'roomId')}
-                >
-                  <option value="" disabled>
-                    Select a room...
-                  </option>
-                  {this.rooms.map(room => (
-                    <option value={room.id} key={room.id}>
-                      {room.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <md-filled-text-field
-                label="New schedule note..."
-                name="new_note"
-                required
-                value={this.newSchedule.note}
-                onInput={(event) => this.handleInputChange(event, 'note')}
-              />
-              {/* <md-filled-text-field
-                label="New schedule start time..."
-                name="new_start"
-                required
-                value={this.newSchedule.start}
-                onInput={(event) => this.handleInputChange(event, 'start')}
-              /> */}
-              <div class="specialInput">
-                <label htmlFor="new_start">New schedule start time...</label>
-                <input
-                  id="new_start"
-                  name="new_start"
-                  type="datetime-local"
-                  required
-                  value={this.newSchedule.start}
-                  onInput={(event) => this.handleInputChange(event, 'start')}
-                />
-              </div>
-              {/* <md-filled-text-field
-                label="New schedule end time..."
-                name="new_end"
-                required
-                value={this.newSchedule.end}
-                onInput={(event) => this.handleInputChange(event, 'end')}
-              /> */}
-              <div class="specialInput">
-                <label htmlFor="new_end">New schedule end time...</label>
-                <input
-                  id="new_end"
-                  name="new_end"
-                  type="datetime-local"
-                  required
-                  value={this.newSchedule.end}
-                  onInput={(event) => this.handleInputChange(event, 'end')}
-                />
-              </div>
-            </div>
+                  <md-filled-tonal-button slot="end" onClick={() => this.editSchedule(schedule.id) }><md-icon slot="icon">edit</md-icon></md-filled-tonal-button>
+                  <md-filled-tonal-button slot="end" onClick={() => this.deleteSchedule(schedule.id) }><md-icon slot="icon">delete</md-icon></md-filled-tonal-button>
+                </md-list-item>
+              )}
+              </md-list>
+              <div id="Manage" class="tab_window">
+                <p><b>Create new reservation</b></p>
+                <div class="form">
+                  <md-filled-text-field
+                    label="New reservation id..."
+                    name="new_reservation_id"
+                    required
+                    value={this.newSchedule.id}
+                    onInput={(event) => this.handleInputChange(event, 'id')}
+                  />
+                  {/* <md-filled-text-field
+                    label="New schedule patient id..."
+                    name="new_patientid"
+                    required
+                    value={this.newSchedule.patientId}
+                    onInput={(event) => this.handleInputChange(event, 'patientId')}
+                  /> */}
+                  <div class="specialSelector">
+                    <label htmlFor="patientSelect">Select Patient: </label>
+                    <select
+                      id="patientSelect"
+                      name="new_patientid"
+                      required
+                      // value={this.newSchedule.patientId}
+                      onInput={(event) => this.handleInputChange(event, 'patientId')}
+                    >
+                      <option value="" disabled>
+                        Select a patient...
+                      </option>
+                      {this.patients.map(patient => (
+                        <option value={patient.id} key={patient.id}>
+                          {patient.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  {/* <md-filled-text-field
+                    label="New schedule room id..."
+                    name="new_roomid"
+                    required
+                    value={this.newSchedule.roomId}
+                    onInput={(event) => this.handleInputChange(event, 'roomId')}
+                  /> */}
+                  <div class="specialSelector">
+                    <label htmlFor="roomSelect">Select Room: </label>
+                    <select
+                      id="roomSelect"
+                      name="new_roomid"
+                      required
+                      // value={this.newSchedule.patientId}
+                      onInput={(event) => this.handleInputChange(event, 'roomId')}
+                    >
+                      <option value="" disabled>
+                        Select a room...
+                      </option>
+                      {this.rooms.map(room => (
+                        <option value={room.id} key={room.id}>
+                          {room.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <md-filled-text-field
+                    label="New schedule note..."
+                    name="new_note"
+                    required
+                    value={this.newSchedule.note}
+                    onInput={(event) => this.handleInputChange(event, 'note')}
+                  />
+                  {/* <md-filled-text-field
+                    label="New schedule start time..."
+                    name="new_start"
+                    required
+                    value={this.newSchedule.start}
+                    onInput={(event) => this.handleInputChange(event, 'start')}
+                  /> */}
+                  <div class="specialInput">
+                    <label htmlFor="new_start">New schedule start time...</label>
+                    <input
+                      id="new_start"
+                      name="new_start"
+                      type="datetime-local"
+                      required
+                      value={this.newSchedule.start}
+                      onInput={(event) => this.handleInputChange(event, 'start')}
+                    />
+                  </div>
+                  {/* <md-filled-text-field
+                    label="New schedule end time..."
+                    name="new_end"
+                    required
+                    value={this.newSchedule.end}
+                    onInput={(event) => this.handleInputChange(event, 'end')}
+                  /> */}
+                  <div class="specialInput">
+                    <label htmlFor="new_end">New schedule end time...</label>
+                    <input
+                      id="new_end"
+                      name="new_end"
+                      type="datetime-local"
+                      required
+                      value={this.newSchedule.end}
+                      onInput={(event) => this.handleInputChange(event, 'end')}
+                    />
+                  </div>
+                </div>
 
-            {/* <button onClick={() => this.generateRoom()}>Save</button> */}
-            <md-filled-button
-              onClick={() => this.generateSchedule() }
-              >
-              <md-icon slot="icon">Save</md-icon>
-              Save
-          </md-filled-button>
-          </div>
-        </slot>
+                {/* <button onClick={() => this.generateRoom()}>Save</button> */}
+                <md-filled-button
+                  onClick={() => this.generateSchedule() }
+                  >
+                  <md-icon slot="icon">Save</md-icon>
+                  Save
+              </md-filled-button>
+              </div>
+            </slot>
+            )
+          }
       </Host>
     );
   }

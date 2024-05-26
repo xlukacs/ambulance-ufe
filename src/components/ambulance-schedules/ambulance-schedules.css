@@ -1,0 +1,31 @@
+:host {
+  display: block;
+}
+
+.form{
+  margin-bottom: 10px;
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  width: 30%;
+  min-width: 440px;
+}
+
+.specialSelector, .specialInput{
+  height: 30px;
+  line-height: 30px;
+  background-color: #e6e0e9;
+  padding: 15px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom: 1px solid gray;
+ }
+
+ .specialSelector label, .specialInput label{
+   color: #49454f;
+ }
+ .specialSelector select, .specialInput input{
+   padding: 5px 10px;
+   /* margin-left: 20px; */
+   float: right;
+ }
