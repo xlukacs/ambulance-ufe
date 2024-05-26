@@ -12,6 +12,8 @@ export class ScheduleManager {
   @Prop() ambulanceId: string;
   @State() schedules: Schedule[];
   @State() newSchedule: Schedule = {id: '', patientId: '', roomId: '', note: '', start: '', end: ''};
+  @State() editorMode: boolean = false;
+  @State() editedSchedule: Schedule;
 
   // private async getConditions(): Promise<Schedule[]> {
   //   let local_rooms: Room[];
@@ -78,13 +80,23 @@ export class ScheduleManager {
   }
 
   private async editSchedule(scheduleId: string){
-    console.log("Edit room");
-    console.log(scheduleId);
+    const filteredSchedules = this.schedules.filter(schedule => schedule.id === scheduleId);
+    this.editedSchedule= filteredSchedules.length > 0 ? filteredSchedules[0] : null;
+
+    this.editorMode = true
   }
 
   private async deleteSchedule(scheduleId: string){
-    console.log("Delete room");
-    console.log(scheduleId);
+    try {
+      const response = await SchedulesApiFactory(undefined, this.apiBase).deleteSchedule(scheduleId, this.ambulanceId);
+      if (response.status < 299) {
+        this.schedules = this.schedules.filter(schedule => schedule.id !== scheduleId);
+      } else {
+        console.error(`Cannot delete schedule: ${response.statusText}`);
+      }
+    } catch (err: any) {
+      console.error(`Cannot delete schedule: ${err.message || "unknown"}`);
+    }
   }
 
 
