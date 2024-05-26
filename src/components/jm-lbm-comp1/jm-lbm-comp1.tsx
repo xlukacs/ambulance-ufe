@@ -38,7 +38,8 @@ export class JmLbmComp1 {
   }
   render() {
     let element = "home"
-    // console.log(this.relativePath)
+    console.log(this.relativePath)
+    console.log(this.relativePath.indexOf("entry"))
 
     if ( this.relativePath.startsWith("room-manager/") ){
       element = "rooms";
@@ -46,6 +47,10 @@ export class JmLbmComp1 {
 
     if ( this.relativePath.startsWith("reservation-manager/") ){
       element = "reservation";
+    }
+
+    if ( this.relativePath.startsWith("patient-manager/") || this.relativePath.indexOf("entry") >= 0){
+      element = "patients";
     }
 
     const navigate = (path:string) => {
@@ -66,17 +71,16 @@ export class JmLbmComp1 {
               <room-manager ambulance-id={this.ambulanceId} api-base={this.apiBase}></room-manager>
             ) : element === 'reservation' ? (
               <schedule-manager ambulance-id={this.ambulanceId} api-base={this.apiBase}></schedule-manager>
+            ) : element === 'patients' ? (
+              <lbmjm-ambulance-wl-app  ambulance-id={this.ambulanceId} api-base={this.apiBase} base-path={this.basePath}></lbmjm-ambulance-wl-app>
             ) : (
               <div class="content">
-                <lbm-ambulance-wl-app  ambulance-id={this.ambulanceId} api-base={this.apiBase} base-path={this.basePath}></lbm-ambulance-wl-app>
-                <br />
-                <br />
-
                 <div class="bubble">
                   <h2>
                     Hospital management system
                   </h2>
                   <div class="navigation">
+                    <button class="material-button" onClick={() => navigate('./patient-manager/') }>Load patient manager</button>
                     <button class="material-button" onClick={() => navigate('./room-manager/') }>Load room manager</button>
                     <button class="material-button" onClick={() => navigate('./reservation-manager/')}>Load reservation manager</button>
                   </div>

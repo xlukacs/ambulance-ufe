@@ -17,25 +17,6 @@ export class ScheduleManager {
   @State() patients: WaitingListEntry[];
   @State() rooms: Room[];
 
-  // private async getConditions(): Promise<Schedule[]> {
-  //   let local_rooms: Room[];
-
-  //   try {
-  //      const response = await AmbulanceRoomsApiFactory(undefined, this.apiBase).getRooms(this.ambulanceId);
-  //      if (response.status < 299) {
-  //      local_rooms = response.data;
-  //      }
-  //   } catch (err: any) {
-  //      // no strong dependency on conditions
-  //       console.error(`Cannot retrieve list of rooms: ${err.message || "unknown"}`);
-  //   }
-  //   // always have some fallback condition
-  //   return local_rooms || [
-  //     { id: "1", width: "10", height: "10", tipicalCostToOperate: 100 },
-  //     { id: "2", width: "15", height: "12", tipicalCostToOperate: 105 }
-  //   ];
-  // }
-
   private async createSchedule(schedule: Schedule): Promise<Schedule> {
     try {
       const response = await SchedulesApiFactory(undefined, this.apiBase).createSchedule(this.ambulanceId, schedule);
@@ -52,20 +33,10 @@ export class ScheduleManager {
   }
 
   private async generateSchedule(){
-    // let id_element = this.element.shadowRoot.querySelector('input[name="new_room_id"]') as HTMLInputElement;
-    // let width_element = this.element.shadowRoot.querySelector('input[name="new_room_width"]') as HTMLInputElement;
-    // let height_element = this.element.shadowRoot.querySelector('input[name="new_room_height"]') as HTMLInputElement;
-    // let tipicalCostToOperate_element = this.element.shadowRoot.querySelector('input[name="new_room_costph"]') as HTMLInputElement;
-
-    // const newRoom = {
-    //   id: id_element.value,
-    //   width: width_element.value,
-    //   height: height_element.value,
-    //   tipicalCostToOperate: parseInt(tipicalCostToOperate_element.value)
-    // }
-
-
-    // const tcoph = parseInt(this.newRoom.tipicalCostToOperate);
+    if (this.newSchedule.start > this.newSchedule.end) {
+      alert("Start time cannot be greater than end time");
+      return;
+    }
 
     const created_schedule = {
       id: this.newSchedule.id,
@@ -110,10 +81,6 @@ export class ScheduleManager {
     this.patients = response1.data;
     const response2 = await AmbulanceRoomsApiFactory(undefined, this.apiBase).getRooms(this.ambulanceId);
     this.rooms = response2.data;
-
-    console.log(this.schedules)
-    console.log(this.patients)
-    console.log(this.rooms)
   }
 
   handleInputChange(event: Event, field: string) {
