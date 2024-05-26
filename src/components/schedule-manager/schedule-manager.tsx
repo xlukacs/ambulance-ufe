@@ -1,5 +1,5 @@
 import { Component, Host, h, Element, State, Prop} from '@stencil/core';
-import { SchedulesApiFactory, Schedule, WaitingListEntry, AmbulanceWaitingListApiFactory } from '../../api/ambulance-wl';
+import { SchedulesApiFactory, Schedule, WaitingListEntry, AmbulanceWaitingListApiFactory, AmbulanceRoomsApiFactory, Room } from '../../api/ambulance-wl';
 
 @Component({
   tag: 'schedule-manager',
@@ -15,6 +15,7 @@ export class ScheduleManager {
   @State() editorMode: boolean = false;
   @State() editedSchedule: Schedule;
   @State() patients: WaitingListEntry[];
+  @State() rooms: Room[];
 
   // private async getConditions(): Promise<Schedule[]> {
   //   let local_rooms: Room[];
@@ -103,9 +104,12 @@ export class ScheduleManager {
 
   async componentWillLoad() {
     // this.getConditions();
-    // this.schedules = await this.getSchedules(); TODO implement
-    const response = await AmbulanceWaitingListApiFactory().getWaitingListEntries(this.ambulanceId);
-    this.patients = response.data;
+    const response = await SchedulesApiFactory(undefined, this.apiBase).getSchedules(this.ambulanceId);
+    this.schedules = response.data;
+    const response1 = await AmbulanceWaitingListApiFactory(undefined, this.apiBase).getWaitingListEntries(this.ambulanceId);
+    this.patients = response1.data;
+    const response2 = await AmbulanceRoomsApiFactory(undefined, this.apiBase).getRooms(this.ambulanceId);
+    this.rooms = response2.data;
   }
 
   handleInputChange(event: Event, field: string) {
@@ -188,8 +192,8 @@ export class ScheduleManager {
                 value={this.newSchedule.patientId}
                 onInput={(event) => this.handleInputChange(event, 'patientId')}
               /> */}
-              <div>
-                <label htmlFor="patientSelect">Select Patient</label>
+              <div class="specialSelector">
+                <label htmlFor="patientSelect">Select Patient: </label>
                 <select
                   id="patientSelect"
                   name="new_patientid"
@@ -207,13 +211,32 @@ export class ScheduleManager {
                   ))}
                 </select>
               </div>
-              <md-filled-text-field
+              {/* <md-filled-text-field
                 label="New schedule room id..."
                 name="new_roomid"
                 required
                 value={this.newSchedule.roomId}
                 onInput={(event) => this.handleInputChange(event, 'roomId')}
-              />
+              /> */}
+              <div class="specialSelector">
+                <label htmlFor="roomSelect">Select Room: </label>
+                <select
+                  id="roomSelect"
+                  name="new_roomid"
+                  required
+                  // value={this.newSchedule.patientId}
+                  onInput={(event) => this.handleInputChange(event, 'roomId')}
+                >
+                  <option value="" disabled>
+                    Select a room...
+                  </option>
+                  {this.rooms.map(room => (
+                    <option value={room.id} key={room.id}>
+                      {room.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <md-filled-text-field
                 label="New schedule note..."
                 name="new_note"

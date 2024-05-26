@@ -65,6 +65,12 @@ export interface Ambulance {
      * @memberof Ambulance
      */
     'predefinedConditions'?: Array<Condition>;
+    /**
+     * 
+     * @type {Array<Schedule>}
+     * @memberof Ambulance
+     */
+    'schedules'?: Array<Schedule>;
 }
 /**
  * Describes disease, symptoms, or other reasons of patient   visit
@@ -139,6 +145,12 @@ export interface Room {
      * @memberof Room
      */
     'equipment'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Room
+     */
+    'name'?: string;
 }
 /**
  * 
@@ -1551,9 +1563,9 @@ export const SchedulesApiAxiosParamCreator = function (configuration?: Configura
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSchedule: async (ambulanceId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getSchedules: async (ambulanceId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'ambulanceId' is not null or undefined
-            assertParamExists('getSchedule', 'ambulanceId', ambulanceId)
+            assertParamExists('getSchedules', 'ambulanceId', ambulanceId)
             const localVarPath = `/schedules/{ambulanceId}/entries`
                 .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -1663,8 +1675,8 @@ export const SchedulesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getSchedule(ambulanceId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<WaitingListEntry>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getSchedule(ambulanceId, options);
+        async getSchedules(ambulanceId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Schedule>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getSchedules(ambulanceId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1719,8 +1731,8 @@ export const SchedulesApiFactory = function (configuration?: Configuration, base
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSchedule(ambulanceId: string, options?: any): AxiosPromise<Array<WaitingListEntry>> {
-            return localVarFp.getSchedule(ambulanceId, options).then((request) => request(axios, basePath));
+        getSchedules(ambulanceId: string, options?: any): AxiosPromise<Array<Schedule>> {
+            return localVarFp.getSchedules(ambulanceId, options).then((request) => request(axios, basePath));
         },
         /**
          * Use this method to update content of the schedule entry.
@@ -1773,7 +1785,7 @@ export interface SchedulesApiInterface {
      * @throws {RequiredError}
      * @memberof SchedulesApiInterface
      */
-    getSchedule(ambulanceId: string, options?: AxiosRequestConfig): AxiosPromise<Array<WaitingListEntry>>;
+    getSchedules(ambulanceId: string, options?: AxiosRequestConfig): AxiosPromise<Array<Schedule>>;
 
     /**
      * Use this method to update content of the schedule entry.
@@ -1830,8 +1842,8 @@ export class SchedulesApi extends BaseAPI implements SchedulesApiInterface {
      * @throws {RequiredError}
      * @memberof SchedulesApi
      */
-    public getSchedule(ambulanceId: string, options?: AxiosRequestConfig) {
-        return SchedulesApiFp(this.configuration).getSchedule(ambulanceId, options).then((request) => request(this.axios, this.basePath));
+    public getSchedules(ambulanceId: string, options?: AxiosRequestConfig) {
+        return SchedulesApiFp(this.configuration).getSchedules(ambulanceId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
