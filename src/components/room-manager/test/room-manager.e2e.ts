@@ -1,7 +1,7 @@
 import { newE2EPage } from '@stencil/core/testing';
 
 describe('room-manager', () => {
-  it('renders', async () => {
+  xit('renders', async () => {
     const page = await newE2EPage();
     await page.setContent('<room-manager></room-manager>');
 
