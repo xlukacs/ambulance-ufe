@@ -110,16 +110,24 @@ export class ScheduleManager {
     this.patients = response1.data;
     const response2 = await AmbulanceRoomsApiFactory(undefined, this.apiBase).getRooms(this.ambulanceId);
     this.rooms = response2.data;
+
+    console.log(this.schedules)
+    console.log(this.patients)
+    console.log(this.rooms)
   }
 
   handleInputChange(event: Event, field: string) {
-    console.log("setting field", field)
-
     const target = event.target as HTMLInputElement;
-    console.log("setting value", target.value)
+    let value = target.value;
+
+    // Append the 'Z' for UTC timezone if the field is 'start'
+    if ((field === 'start' || field == 'end') && value) {
+      value += ':00Z'; // Ensure seconds are added and 'Z' for UTC time
+    }
+
     this.newSchedule = {
       ...this.newSchedule,
-      [field]: target.value
+      [field]: value,
     };
   }
 
@@ -244,20 +252,42 @@ export class ScheduleManager {
                 value={this.newSchedule.note}
                 onInput={(event) => this.handleInputChange(event, 'note')}
               />
-              <md-filled-text-field
+              {/* <md-filled-text-field
                 label="New schedule start time..."
                 name="new_start"
                 required
                 value={this.newSchedule.start}
                 onInput={(event) => this.handleInputChange(event, 'start')}
-              />
-              <md-filled-text-field
+              /> */}
+              <div class="specialInput">
+                <label htmlFor="new_start">New schedule start time...</label>
+                <input
+                  id="new_start"
+                  name="new_start"
+                  type="datetime-local"
+                  required
+                  value={this.newSchedule.start}
+                  onInput={(event) => this.handleInputChange(event, 'start')}
+                />
+              </div>
+              {/* <md-filled-text-field
                 label="New schedule end time..."
                 name="new_end"
                 required
                 value={this.newSchedule.end}
                 onInput={(event) => this.handleInputChange(event, 'end')}
-              />
+              /> */}
+              <div class="specialInput">
+                <label htmlFor="new_end">New schedule end time...</label>
+                <input
+                  id="new_end"
+                  name="new_end"
+                  type="datetime-local"
+                  required
+                  value={this.newSchedule.end}
+                  onInput={(event) => this.handleInputChange(event, 'end')}
+                />
+              </div>
             </div>
 
             {/* <button onClick={() => this.generateRoom()}>Save</button> */}
