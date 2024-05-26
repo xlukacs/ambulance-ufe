@@ -5,7 +5,14 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { Room } from "./api/ambulance-wl";
+export { Room } from "./api/ambulance-wl";
 export namespace Components {
+    interface AmbulanceRoom {
+        "ambulanceId": string;
+        "apiBase": string;
+        "data": Room;
+    }
     interface JmLbmComp1 {
         "ambulanceId": string;
         "apiBase": string;
@@ -48,6 +55,10 @@ export namespace Components {
         "apiBase": string;
     }
 }
+export interface AmbulanceRoomCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLAmbulanceRoomElement;
+}
 export interface LbmAmbulanceWlEditorCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLLbmAmbulanceWlEditorElement;
@@ -57,6 +68,23 @@ export interface LbmAmbulanceWlListCustomEvent<T> extends CustomEvent<T> {
     target: HTMLLbmAmbulanceWlListElement;
 }
 declare global {
+    interface HTMLAmbulanceRoomElementEventMap {
+        "editor-closed": string;
+    }
+    interface HTMLAmbulanceRoomElement extends Components.AmbulanceRoom, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLAmbulanceRoomElementEventMap>(type: K, listener: (this: HTMLAmbulanceRoomElement, ev: AmbulanceRoomCustomEvent<HTMLAmbulanceRoomElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLAmbulanceRoomElementEventMap>(type: K, listener: (this: HTMLAmbulanceRoomElement, ev: AmbulanceRoomCustomEvent<HTMLAmbulanceRoomElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLAmbulanceRoomElement: {
+        prototype: HTMLAmbulanceRoomElement;
+        new (): HTMLAmbulanceRoomElement;
+    };
     interface HTMLJmLbmComp1Element extends Components.JmLbmComp1, HTMLStencilElement {
     }
     var HTMLJmLbmComp1Element: {
@@ -122,6 +150,7 @@ declare global {
         new (): HTMLScheduleManagerElement;
     };
     interface HTMLElementTagNameMap {
+        "ambulance-room": HTMLAmbulanceRoomElement;
         "jm-lbm-comp1": HTMLJmLbmComp1Element;
         "lbm-ambulance-wl-app": HTMLLbmAmbulanceWlAppElement;
         "lbm-ambulance-wl-editor": HTMLLbmAmbulanceWlEditorElement;
@@ -132,6 +161,12 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface AmbulanceRoom {
+        "ambulanceId"?: string;
+        "apiBase"?: string;
+        "data"?: Room;
+        "onEditor-closed"?: (event: AmbulanceRoomCustomEvent<string>) => void;
+    }
     interface JmLbmComp1 {
         "ambulanceId"?: string;
         "apiBase"?: string;
@@ -176,6 +211,7 @@ declare namespace LocalJSX {
         "apiBase"?: string;
     }
     interface IntrinsicElements {
+        "ambulance-room": AmbulanceRoom;
         "jm-lbm-comp1": JmLbmComp1;
         "lbm-ambulance-wl-app": LbmAmbulanceWlApp;
         "lbm-ambulance-wl-editor": LbmAmbulanceWlEditor;
@@ -189,6 +225,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "ambulance-room": LocalJSX.AmbulanceRoom & JSXBase.HTMLAttributes<HTMLAmbulanceRoomElement>;
             "jm-lbm-comp1": LocalJSX.JmLbmComp1 & JSXBase.HTMLAttributes<HTMLJmLbmComp1Element>;
             "lbm-ambulance-wl-app": LocalJSX.LbmAmbulanceWlApp & JSXBase.HTMLAttributes<HTMLLbmAmbulanceWlAppElement>;
             "lbm-ambulance-wl-editor": LocalJSX.LbmAmbulanceWlEditor & JSXBase.HTMLAttributes<HTMLLbmAmbulanceWlEditorElement>;

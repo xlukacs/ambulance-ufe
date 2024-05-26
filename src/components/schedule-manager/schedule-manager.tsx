@@ -1,5 +1,5 @@
 import { Component, Host, h, Element, State, Prop} from '@stencil/core';
-import { SchedulesApiFactory, Schedule } from '../../api/ambulance-wl';
+import { SchedulesApiFactory, Schedule, WaitingListEntry, AmbulanceWaitingListApiFactory } from '../../api/ambulance-wl';
 
 @Component({
   tag: 'schedule-manager',
@@ -14,6 +14,7 @@ export class ScheduleManager {
   @State() newSchedule: Schedule = {id: '', patientId: '', roomId: '', note: '', start: '', end: ''};
   @State() editorMode: boolean = false;
   @State() editedSchedule: Schedule;
+  @State() patients: WaitingListEntry[];
 
   // private async getConditions(): Promise<Schedule[]> {
   //   let local_rooms: Room[];
@@ -102,11 +103,16 @@ export class ScheduleManager {
 
   async componentWillLoad() {
     // this.getConditions();
-    // this.schedules = await this.getSchedules();
+    // this.schedules = await this.getSchedules(); TODO implement
+    const response = await AmbulanceWaitingListApiFactory().getWaitingListEntries(this.ambulanceId);
+    this.patients = response.data;
   }
 
   handleInputChange(event: Event, field: string) {
+    console.log("setting field", field)
+
     const target = event.target as HTMLInputElement;
+    console.log("setting value", target.value)
     this.newSchedule = {
       ...this.newSchedule,
       [field]: target.value
@@ -175,13 +181,32 @@ export class ScheduleManager {
                 value={this.newSchedule.id}
                 onInput={(event) => this.handleInputChange(event, 'id')}
               />
-              <md-filled-text-field
+              {/* <md-filled-text-field
                 label="New schedule patient id..."
                 name="new_patientid"
                 required
                 value={this.newSchedule.patientId}
                 onInput={(event) => this.handleInputChange(event, 'patientId')}
-              />
+              /> */}
+              <div>
+                <label htmlFor="patientSelect">Select Patient</label>
+                <select
+                  id="patientSelect"
+                  name="new_patientid"
+                  required
+                  // value={this.newSchedule.patientId}
+                  onInput={(event) => this.handleInputChange(event, 'patientId')}
+                >
+                  <option value="" disabled>
+                    Select a patient...
+                  </option>
+                  {this.patients.map(patient => (
+                    <option value={patient.id} key={patient.id}>
+                      {patient.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <md-filled-text-field
                 label="New schedule room id..."
                 name="new_roomid"

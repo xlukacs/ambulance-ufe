@@ -440,21 +440,21 @@ export const AmbulanceRoomsApiAxiosParamCreator = function (configuration?: Conf
             };
         },
         /**
-         * Use this method to delete the specific room from the rooms list.
+         * Use this method to delete the specific room from the system.
          * @summary Deletes specific room
+         * @param {string} roomId pass the id of the particular room
          * @param {string} ambulanceId pass the id of the particular ambulance
-         * @param {string} entryId pass the id of the particular entry in the rooms list
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteRoom: async (ambulanceId: string, entryId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        deleteRoom: async (roomId: string, ambulanceId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'roomId' is not null or undefined
+            assertParamExists('deleteRoom', 'roomId', roomId)
             // verify required parameter 'ambulanceId' is not null or undefined
             assertParamExists('deleteRoom', 'ambulanceId', ambulanceId)
-            // verify required parameter 'entryId' is not null or undefined
-            assertParamExists('deleteRoom', 'entryId', entryId)
-            const localVarPath = `/rooms/{ambulanceId}/entries`
-                .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)))
-                .replace(`{${"entryId"}}`, encodeURIComponent(String(entryId)));
+            const localVarPath = `/rooms/{ambulanceId}/room/{roomId}`
+                .replace(`{${"roomId"}}`, encodeURIComponent(String(roomId)))
+                .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -511,6 +511,50 @@ export const AmbulanceRoomsApiAxiosParamCreator = function (configuration?: Conf
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * Use this method to update content of a specific room
+         * @summary Updates specific room
+         * @param {string} ambulanceId pass the id of the particular ambulance
+         * @param {string} roomId pass the id of the particular room
+         * @param {Room} room Room to update
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateRoom: async (ambulanceId: string, roomId: string, room: Room, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'ambulanceId' is not null or undefined
+            assertParamExists('updateRoom', 'ambulanceId', ambulanceId)
+            // verify required parameter 'roomId' is not null or undefined
+            assertParamExists('updateRoom', 'roomId', roomId)
+            // verify required parameter 'room' is not null or undefined
+            assertParamExists('updateRoom', 'room', room)
+            const localVarPath = `/rooms/{ambulanceId}/room/{roomId}`
+                .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)))
+                .replace(`{${"roomId"}}`, encodeURIComponent(String(roomId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(room, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -534,15 +578,15 @@ export const AmbulanceRoomsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Use this method to delete the specific room from the rooms list.
+         * Use this method to delete the specific room from the system.
          * @summary Deletes specific room
+         * @param {string} roomId pass the id of the particular room
          * @param {string} ambulanceId pass the id of the particular ambulance
-         * @param {string} entryId pass the id of the particular entry in the rooms list
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteRoom(ambulanceId: string, entryId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteRoom(ambulanceId, entryId, options);
+        async deleteRoom(roomId: string, ambulanceId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteRoom(roomId, ambulanceId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -554,6 +598,19 @@ export const AmbulanceRoomsApiFp = function(configuration?: Configuration) {
          */
         async getRooms(ambulanceId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Room>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getRooms(ambulanceId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Use this method to update content of a specific room
+         * @summary Updates specific room
+         * @param {string} ambulanceId pass the id of the particular ambulance
+         * @param {string} roomId pass the id of the particular room
+         * @param {Room} room Room to update
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateRoom(ambulanceId: string, roomId: string, room: Room, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Room>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateRoom(ambulanceId, roomId, room, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -578,15 +635,15 @@ export const AmbulanceRoomsApiFactory = function (configuration?: Configuration,
             return localVarFp.createRoom(ambulanceId, room, options).then((request) => request(axios, basePath));
         },
         /**
-         * Use this method to delete the specific room from the rooms list.
+         * Use this method to delete the specific room from the system.
          * @summary Deletes specific room
+         * @param {string} roomId pass the id of the particular room
          * @param {string} ambulanceId pass the id of the particular ambulance
-         * @param {string} entryId pass the id of the particular entry in the rooms list
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteRoom(ambulanceId: string, entryId: string, options?: any): AxiosPromise<void> {
-            return localVarFp.deleteRoom(ambulanceId, entryId, options).then((request) => request(axios, basePath));
+        deleteRoom(roomId: string, ambulanceId: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteRoom(roomId, ambulanceId, options).then((request) => request(axios, basePath));
         },
         /**
          * By using ambulanceId you get list of predefined rooms
@@ -597,6 +654,18 @@ export const AmbulanceRoomsApiFactory = function (configuration?: Configuration,
          */
         getRooms(ambulanceId: string, options?: any): AxiosPromise<Array<Room>> {
             return localVarFp.getRooms(ambulanceId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Use this method to update content of a specific room
+         * @summary Updates specific room
+         * @param {string} ambulanceId pass the id of the particular ambulance
+         * @param {string} roomId pass the id of the particular room
+         * @param {Room} room Room to update
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateRoom(ambulanceId: string, roomId: string, room: Room, options?: any): AxiosPromise<Room> {
+            return localVarFp.updateRoom(ambulanceId, roomId, room, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -619,15 +688,15 @@ export interface AmbulanceRoomsApiInterface {
     createRoom(ambulanceId: string, room: Room, options?: AxiosRequestConfig): AxiosPromise<Room>;
 
     /**
-     * Use this method to delete the specific room from the rooms list.
+     * Use this method to delete the specific room from the system.
      * @summary Deletes specific room
+     * @param {string} roomId pass the id of the particular room
      * @param {string} ambulanceId pass the id of the particular ambulance
-     * @param {string} entryId pass the id of the particular entry in the rooms list
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AmbulanceRoomsApiInterface
      */
-    deleteRoom(ambulanceId: string, entryId: string, options?: AxiosRequestConfig): AxiosPromise<void>;
+    deleteRoom(roomId: string, ambulanceId: string, options?: AxiosRequestConfig): AxiosPromise<void>;
 
     /**
      * By using ambulanceId you get list of predefined rooms
@@ -638,6 +707,18 @@ export interface AmbulanceRoomsApiInterface {
      * @memberof AmbulanceRoomsApiInterface
      */
     getRooms(ambulanceId: string, options?: AxiosRequestConfig): AxiosPromise<Array<Room>>;
+
+    /**
+     * Use this method to update content of a specific room
+     * @summary Updates specific room
+     * @param {string} ambulanceId pass the id of the particular ambulance
+     * @param {string} roomId pass the id of the particular room
+     * @param {Room} room Room to update
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AmbulanceRoomsApiInterface
+     */
+    updateRoom(ambulanceId: string, roomId: string, room: Room, options?: AxiosRequestConfig): AxiosPromise<Room>;
 
 }
 
@@ -662,16 +743,16 @@ export class AmbulanceRoomsApi extends BaseAPI implements AmbulanceRoomsApiInter
     }
 
     /**
-     * Use this method to delete the specific room from the rooms list.
+     * Use this method to delete the specific room from the system.
      * @summary Deletes specific room
+     * @param {string} roomId pass the id of the particular room
      * @param {string} ambulanceId pass the id of the particular ambulance
-     * @param {string} entryId pass the id of the particular entry in the rooms list
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AmbulanceRoomsApi
      */
-    public deleteRoom(ambulanceId: string, entryId: string, options?: AxiosRequestConfig) {
-        return AmbulanceRoomsApiFp(this.configuration).deleteRoom(ambulanceId, entryId, options).then((request) => request(this.axios, this.basePath));
+    public deleteRoom(roomId: string, ambulanceId: string, options?: AxiosRequestConfig) {
+        return AmbulanceRoomsApiFp(this.configuration).deleteRoom(roomId, ambulanceId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -684,6 +765,20 @@ export class AmbulanceRoomsApi extends BaseAPI implements AmbulanceRoomsApiInter
      */
     public getRooms(ambulanceId: string, options?: AxiosRequestConfig) {
         return AmbulanceRoomsApiFp(this.configuration).getRooms(ambulanceId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Use this method to update content of a specific room
+     * @summary Updates specific room
+     * @param {string} ambulanceId pass the id of the particular ambulance
+     * @param {string} roomId pass the id of the particular room
+     * @param {Room} room Room to update
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AmbulanceRoomsApi
+     */
+    public updateRoom(ambulanceId: string, roomId: string, room: Room, options?: AxiosRequestConfig) {
+        return AmbulanceRoomsApiFp(this.configuration).updateRoom(ambulanceId, roomId, room, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
