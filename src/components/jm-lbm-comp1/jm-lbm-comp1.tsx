@@ -72,7 +72,7 @@ export class JmLbmComp1 {
             ) : element === 'reservation' ? (
               <schedule-manager ambulance-id={this.ambulanceId} api-base={this.apiBase}></schedule-manager>
             ) : element === 'patients' ? (
-              <lbmjm-ambulance-wl-app  ambulance-id={this.ambulanceId} api-base={this.apiBase} base-path={this.basePath}></lbmjm-ambulance-wl-app>
+              <lbm-ambulance-wl-app  ambulance-id={this.ambulanceId} api-base={this.apiBase} base-path={this.basePath}></lbm-ambulance-wl-app>
             ) : (
               <div class="content">
                 <div class="bubble">
